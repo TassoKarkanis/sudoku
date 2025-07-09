@@ -1,0 +1,52 @@
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+X   |   |   X   |   |   X   |   |   X
+X 3 |   |   X   |   |   X   |   |   X
+X   |   |   X   |   |   X   |   |   X
+X---+---+---X---+---+---X---+---+---X
+X.  |   |   X   |   |   X   |   |   X
+X . |   |   X   |   |   X   |   |   X
+X . |   |   X   |   |   X   |   |   X
+X---+---+---X---+---+---X---+---+---X
+X   |   |   X   |   |   X   |   |   X
+X   |   |   X   |   |   X   |   |   X
+X   |   |   X   |   |   X   |   |   X
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+             
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+X     | ..  |     X     |     |     X     |     |     X
+X  3  | ... |     X     |     |     X     |     |     X
+X     | ... |     X     |     |     X     |     |     X
+X-----+-----+-----X-----+-----+-----X-----+-----+-----X
+X     |     |     X     |     |     X     |     |     X
+X  3  |     |     X     |     |     X     |     |     X
+X     |     |     X     |     |     X     |     |     X
+X-----+-----+-----X-----+-----+-----X-----+-----+-----X
+X     |     |     X     |     |     X     |     |     X
+X  3  |     |     X     |     |     X     |     |     X
+X     |     |     X     |     |     X     |     |     X
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+X     |     |     X     |     |     X     |     |     X
+X  3  |     |     X     |     |     X     |     |     X
+X     |     |     X     |     |     X     |     |     X
+X-----+-----+-----X-----+-----+-----X-----+-----+-----X
+X     |     |     X     |     |     X     |     |     X
+X  3  |     |     X     |     |     X     |     |     X
+X     |     |     X     |     |     X     |     |     X
+X-----+-----+-----X-----+-----+-----X-----+-----+-----X
+X     |     |     X     |     |     X     |     |     X
+X  3  |     |     X     |     |     X     |     |     X
+X     |     |     X     |     |     X     |     |     X
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+X     |     |     X     |     |     X     |     |     X
+X  3  |     |     X     |     |     X     |     |     X
+X     |     |     X     |     |     X     |     |     X
+X-----+-----+-----X-----+-----+-----X-----+-----+-----X
+X     |     |     X     |     |     X     |     |     X
+X  3  |     |     X     |     |     X     |     |     X
+X     |     |     X     |     |     X     |     |     X
+X-----+-----+-----X-----+-----+-----X-----+-----+-----X
+X     |     |     X     |     |     X     |     |     X
+X  3  |     |     X     |     |     X     |     |     X
+X     |     |     X     |     |     X     |     |     X
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
