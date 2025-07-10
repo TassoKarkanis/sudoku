@@ -1,26 +1,65 @@
 import curses
-import json
+import os
 
-class Board:
+from .board import *
+from .eliminations import *
+
+class Game:
     def __init__(self):
-        # values, index [y][x]
-        self._v = [[0]*9 for i in range(9)]
-
-        # eliminations as a map of (x,y) -> set
-        self._e = {}
-        self._reset_eliminations()
+        self._b = Board()
 
         # cursor position as (x,y)
         self._cursor = (0, 0)
 
-    def load(self, filename):
-        # load the values
-        with open(filename) as fp:
-            self._v = json.load(fp)
-            
+        # whether to draw eliminations
+        self._show_eliminations = True
+
+    def load(self, stdscr, filename):
+        self._b.load(filename)
         self._compute_eliminations()
+        self._draw(stdscr)
+
+    def set_cursor(self, stdscr, key):
+        # determine the delta
+        dx = 0
+        dy = 0
+        if key == curses.KEY_UP:
+            dy = -1
+        elif key == curses.KEY_DOWN:
+            dy = 1
+        elif key == curses.KEY_LEFT:
+            dx = -1
+        elif key == curses.KEY_RIGHT:
+            dx = 1
+        else:
+            return
+
+        # compute and set the cursor position
+        x, y = self._cursor
+        x += dx
+        y += dy
+        x = min(x, 8)
+        x = max(x, 0)
+        y = min(y, 8)
+        y = max(y, 0)
+        self._cursor = (x, y)
+        self._draw_cursor(stdscr)
+
+    def set_value(self, stdscr, v):
+        self._b.set_value(self._cursor, v)
+        self._compute_eliminations()
+        self._draw(stdscr)
+
+    def get_show_eliminations(self):
+        return self._show_eliminations
+
+    def set_show_eliminations(self, stdscr, show):
+        self._show_eliminations = show
+        self._draw(stdscr)
         
-    def draw(self, stdscr):
+    def _draw(self, stdscr):
+        stdscr.clear()
+        
         # horizontal major dividers
         for y in [0, 12, 24, 36]:
             stdscr.addstr(y, 0, "X"*55)
@@ -49,19 +88,22 @@ class Board:
         # draw the values
         for y in range(9):
             for x in range(9):
-                self.draw_value(stdscr, x, y)
+                self._draw_value(stdscr, (x, y))
 
-    def draw_value(self, stdscr, x, y):
-        v = self._v[y][x]
+        self._draw_cursor(stdscr)
+
+    def _draw_value(self, stdscr, p):
+        v = self._b.value(p)
         if v == 0:
-            self.draw_elimination(stdscr, x, y)
+            self._draw_elimination(stdscr, p)
         else:
             v = str(v)
+            x, y = p
             stdscr.addstr(4*y+2, 6*x+3, v)
 
-    def draw_elimination(self, stdscr, x, y):
-        p = (x, y)
-        e = self._e[p]
+    def _draw_elimination(self, stdscr, p):
+        x, y = p
+        e = self._b.eliminations(p)
         for j in range(3):
             v = ""
             for i in range(3):
@@ -69,106 +111,32 @@ class Board:
                     v += " "
                 else:
                     v += "."
+
+            if not self._show_eliminations:
+                v = "   "
             stdscr.addstr(4*y+j+1, 6*x+2, v)
 
-    def draw_cursor(self, stdscr):
+    def _draw_cursor(self, stdscr):
         x, y = self._cursor
         stdscr.move(4*y + 2, 6*x + 3)
 
-    def set_cursor(self, key):
-        # determine the delta
-        dx = 0
-        dy = 0
-        if key == curses.KEY_UP:
-            dy = -1
-        elif key == curses.KEY_DOWN:
-            dy = 1
-        elif key == curses.KEY_LEFT:
-            dx = -1
-        elif key == curses.KEY_RIGHT:
-            dx = 1
-        else:
-            return
-
-        # compute and set the cursor position
-        x, y = self._cursor
-        x += dx
-        y += dy
-        x = min(x, 8)
-        x = max(x, 0)
-        y = min(y, 8)
-        y = max(y, 0)
-        self._cursor = (x, y)
-
-    def set_value(self, stdscr, v):
-        x, y = self._cursor
-        self._v[y][x] = v
-        self.draw_value(stdscr, x, y)
-
-    def _reset_eliminations(self):
-        for x in range(9):
-            for y in range(9):
-                self._e[(x,y)] = set()
-
     def _compute_eliminations(self):
-        self._reset_eliminations()
+        compute_eliminations(self._b)
 
-        # direct eliminations
-        for x in range(9):
-            for y in range(9):
-                self._compute_value_eliminations(x, y)
-
-        # only-possible-value
-        for x in range(9):
-            for y in range(9):
-                self._compute_only_possible_value_eliminations(x, y)
         
+def get_board_filename(name):
+    current_file_path = __file__
+    current_module_directory = os.path.dirname(os.path.abspath(current_file_path))
+    return os.path.join(current_module_directory, "boards", name)
 
-    def _compute_value_eliminations(self, x0, y0):
-        # get the eliminations
-        p = (x0, y0)
-        e = self._e[p]
-
-        # eliminate values in the same row
-        for x in range(9):
-            v = self._v[y0][x]
-            if v != 0:
-                e.add(v)
-
-        # eliminate values in the same column
-        for y in range(9):
-            v = self._v[y][x0]
-            if v != 0:
-                e.add(v)
         
-        # eliminate values in the same square
-        for j in range(3):
-            y = 3*(y0 // 3) + j
-            for i in range(3):
-                x = 3*(x0 // 3) + i
-                v = self._v[y][x]
-                if v != 0:
-                    e.add(v)
-
-    def _compute_only_possible_value_eliminations(self, x0, y0):
-        # get the eliminations
-        p = (x0, y0)
-        e0 = self._e[p]
-
-        # if all other undetermined values in the 
-        
-    
-
-
-def main(stdscr):
+def sudoku(stdscr):
     curses.initscr()
     curses.noecho()
     curses.cbreak()
 
-    b = Board()
-    b.load("boards/moderate1.json")
-    b.draw(stdscr)
-    b.draw_cursor(stdscr)
+    g = Game()
+    g.load(stdscr, get_board_filename("moderate1.json"))
 
     # receive input
     cursor_keys = (curses.KEY_UP, curses.KEY_DOWN,
@@ -177,11 +145,9 @@ def main(stdscr):
     while True:
         key = stdscr.getch()
         if key in cursor_keys:
-            b.set_cursor(key)
-            b.draw_cursor(stdscr)
+            g.set_cursor(stdscr, key)
+        if key == 101:
+            show = g.get_show_eliminations()
+            g.set_show_eliminations(stdscr, not show)
         elif key in value_keys:
-            b.set_value(stdscr, key - 48)
-
-curses.wrapper(main)
-      
-
+            g.set_value(stdscr, key - 48)
