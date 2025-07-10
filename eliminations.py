@@ -12,7 +12,7 @@ def compute_eliminations(b):
         if b.has_value(p):
             continue
         
-        for iterator in (cells_in_row, cells_in_column, cells_in_square):
+        for iterator in iterators():
             compute_only_possible_value_eliminations(b, p, iterator)
         
 
@@ -20,23 +20,12 @@ def compute_value_eliminations(b, p0):
     # get the eliminations
     e = b.eliminations(p0)
 
-    # eliminate values in the same row
-    for p in cells_in_row(p0):
-        v = b.value(p)
-        if v != 0:
-            e.add(v)
-
-    # eliminate values in the same column
-    for p in cells_in_column(p0):
-        v = b.value(p)
-        if v != 0:
-            e.add(v)
-    
-    # eliminate values in the same square
-    for p in cells_in_square(p0):
-        v = b.value(p)
-        if v != 0:
-            e.add(v)
+    # perform the direct eliminations
+    for iterator in iterators():
+        for p in iterator(p0):
+            v = b.value(p)
+            if v != 0:
+                e.add(v)
 
 def compute_only_possible_value_eliminations(b, p0, iterator):
     # compute the set of values
@@ -100,3 +89,6 @@ def all_cells():
 
 def all_values():
     return [v+1 for v in range(9)]
+
+def iterators():
+    return (cells_in_row, cells_in_column, cells_in_square)
