@@ -19,6 +19,10 @@ class Board:
 
         self.reset_eliminations()
 
+    def save(self, filename):
+        with open(filename, "w") as fp:
+            json.dump(self._v, fp, indent=4)
+
     def value(self, p):
         x, y = p
         return self._v[y][x]

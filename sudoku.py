@@ -118,6 +118,9 @@ class Game:
         # reset eliminations and redraw
         self._compute_eliminations()
         self._draw(stdscr)
+
+    def save_board(self, filename):
+        self._b.save(filename)
         
     def _draw(self, stdscr):
         # compute a modeline
@@ -186,8 +189,9 @@ def sudoku(stdscr):
     curses.init_pair(1, 1, 2)
     curses.init_pair(2, 1, 3)
 
+    filename = get_board_filename("moderate5.json")
     g = Game()
-    g.load(stdscr, get_board_filename("moderate3.json"))
+    g.load(stdscr, filename)
 
     # receive input
     cursor_keys = (curses.KEY_UP, curses.KEY_DOWN,
@@ -199,10 +203,12 @@ def sudoku(stdscr):
             g.set_cursor(stdscr, key)
         elif key == ord('a'):
             g.animate_eliminations(stdscr)
-        if key == ord('e'):
+        elif key == ord('e'):
             show = g.get_show_eliminations()
             g.set_show_eliminations(stdscr, not show)
-        if key == ord('f'):
+        elif key == ord('f'):
             g.fill_single_values(stdscr)
+        elif key == ord('s'):
+            g.save_board(filename)
         elif key in value_keys:
             g.set_value(stdscr, key - 48)
