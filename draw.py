@@ -1,10 +1,18 @@
 import curses
 
 class Draw:
-    def __init__(self, board, cursor, show_eliminations):
+    def __init__(self, board,
+                 cursor=None,
+                 show_eliminations=False,
+                 highlit1=set(),
+                 highlit2=set(),
+                 modeline=None):
         self._b = board
         self._cursor = cursor
         self._show_eliminations = show_eliminations
+        self._highlit1 = highlit1
+        self._highlit2 = highlit2
+        self._modeline = modeline
 
     def __call__(self, stdscr):
         stdscr.clear()
@@ -39,7 +47,15 @@ class Draw:
             for x in range(9):
                 self._draw_value(stdscr, (x, y))
 
-        self._draw_cursor(stdscr)
+        # draw the modeline
+        if self._modeline is not None:
+            modeline = self._modeline
+        else:
+            modeline = 80*" "
+        stdscr.addstr(37, 0, modeline)
+
+        if self._cursor is not None:
+            self._draw_cursor(stdscr)
         
     def _draw_value(self, stdscr, p):
         v = self._b.value(p)
@@ -48,9 +64,11 @@ class Draw:
         else:
             v = str(v)
             x, y = p
-            stdscr.addstr(4*y+2, 6*x+3, v)
+            attrs = self._get_attrs(p)
+            stdscr.addstr(4*y+2, 6*x+3, v, attrs)
 
     def _draw_elimination(self, stdscr, p):
+        attrs = self._get_attrs(p)
         x, y = p
         e = self._b.eliminations(p)
         for j in range(3):
@@ -63,8 +81,16 @@ class Draw:
 
             if not self._show_eliminations:
                 v = "   "
-            stdscr.addstr(4*y+j+1, 6*x+2, v)
+            stdscr.addstr(4*y+j+1, 6*x+2, v, attrs)
 
     def _draw_cursor(self, stdscr):
         x, y = self._cursor
         stdscr.move(4*y + 2, 6*x + 3)
+
+    def _get_attrs(self, p):
+        attrs = 0
+        if p in self._highlit1:
+            attrs |= curses.color_pair(1)
+        elif p in self._highlit2:
+            attrs |= curses.color_pair(2)
+        return attrs
